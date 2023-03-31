@@ -18,6 +18,7 @@ on:
         type: choice
         options:
         - dev
+        - nonexistent
         # - qa
       image-tag:
         description: 'Image tag to deploy'
