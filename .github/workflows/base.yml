@@ -1,0 +1,16 @@
+name: Build
+
+on: [push]
+
+jobs:
+
+  ## Only main branch can be deployed to qa, and it doesn't need human approval.
+  ## Once a PR approved and merged to main, it will trigger build and deploy to qa.
+  deploy:
+    name: "Deploy to QA"
+    if: github.ref_name == 'main'
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: 'qa'
+      image-tag: ${{ needs.image-tag.outputs.tag }}
+

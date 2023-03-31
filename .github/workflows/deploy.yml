@@ -1,0 +1,43 @@
+name: Deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: 'string'
+      image-tag:
+        required: true
+        type: 'string'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+        - dev
+        # - qa
+      image-tag:
+        description: 'Image tag to deploy'
+        required: true
+        type: 'string'
+
+jobs:
+  deploy:
+    if: ${{ contains(fromJSON('["qa", "dev"]'), inputs.environment) }}
+    name: Deploy to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    strategy:
+      matrix:
+        application: [service1, service2]
+        customer: [animal1, animal2]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Trigger deploy-helm-chart Workflow
+        run: |
+          echo -c ${{ matrix.customer }} -e dev -a ${{ matrix.application }} -t ${{ inputs.image-tag }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_AWESOME_SECRET }}
